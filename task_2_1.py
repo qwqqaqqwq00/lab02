@@ -45,8 +45,11 @@ class task_2_1:
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         s_t = 2.025 * np.cos(2 * np.pi * 20.25 * self.t + np.pi/3)
         s_f = fft(s_t)
-        s_f_freq = fftfreq(self.N, 1/self.fs)
-        
+        s_f = np.abs(s_f)
+        s_f_freq = fftfreq(len(self.t), self.t[1]-self.t[0])
+        n_fft = len(s_f)
+        s_f = s_f[:n_fft//2]
+        s_f_freq = s_f_freq[:n_fft//2]
         # s_f_freq = np.array(s_f_freq).astype(np.float64)
         # s_f = np.array(s_f).astype(np.float64)
         
