@@ -51,9 +51,16 @@ class task_2_2:
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
-        
-        freq = np.sort(freq)[::-1]
-        freq = np.squeeze(freq[:3]).astype(np.float64)
+        s_f = fft(s_t)
+        s_f = np.abs(s_f)
+        s_f_freq = fftfreq(len(s_t), 1/fs)
+        n = len(s_f)
+        s_f = s_f[:n//2]
+        s_f_freq = s_f_freq[:n//2]
+        # plt.plot(s_f_freq, s_f)
+        # plt.show()
+        freq, _ = find_peaks(s_f)
+        freq = s_f[freq]
         return freq
     
     def get_bw_chirp(self):
@@ -76,7 +83,17 @@ class task_2_2:
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
-        
+        s_f = fft(s_t)
+        s_f = np.abs(s_f)
+        s_f_freq = fftfreq(len(s_t), 1/fs)
+        n = len(s_f)
+        s_f = s_f[:n//2]
+        s_f_freq = s_f_freq[:n//2]
+        # plt.plot(s_f_freq, s_f)
+        # plt.show()
+        freqs, _ = find_peaks(s_f)
+        freqs = s_f_freq[freqs]
+        bw = freqs[-1] - freqs[0]
         return bw 
     
     def get_heart_rate(self):
@@ -99,7 +116,18 @@ class task_2_2:
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
-        
+        s_f = fft(s_t)
+        s_f = np.abs(s_f)
+        s_f_freq = fftfreq(len(s_t), 1/fs)
+        n = len(s_f)
+        s_f = s_f[:n//2]
+        s_f_freq = s_f_freq[:n//2]
+        # plt.plot(s_f_freq[int(0.5*fs):int(3*fs)], s_f[int(0.5*fs):int(3*fs)])
+        # plt.show()
+        freq, _ = find_peaks(s_f)
+        peak_idx = freq[np.argmax(s_f[freq])]
+        peak = s_f_freq[peak_idx]
+        hr = peak * 60
         # Make sure hr is a float64
         if isinstance(hr, np.ndarray):
             if hr.size > 1:
@@ -114,4 +142,6 @@ class task_2_2:
 if __name__ == "__main__":
     data_root = "./data/" # Change this to the directory where you store the data
     test = task_2_2(data_root=data_root)
+    freq = test.get_heart_rate()
+    print(freq)
     # ...
