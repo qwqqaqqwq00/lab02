@@ -53,6 +53,9 @@ class task_2_4:
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
+        t = np.arange(self.num_samples) / Fs
+        s_t = np.exp(1j * 2 * np.pi * (fc + B/(2*T) * t) * t)
+        tx = s_t
         return tx
     
     def compute_if_signal(self):
@@ -77,6 +80,7 @@ class task_2_4:
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
+        if_signal = tx * self.rx_data.conj()
         return if_signal
     
     def estimate_distance(self):
@@ -100,7 +104,18 @@ class task_2_4:
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
+        if_signal = if_signal.mean(axis=0)
+        fft_if_signal = fft(if_signal)
+        fft_if_signal_freq = fftfreq(len(if_signal), 1/Fs)[:len(if_signal)//2]
+        fft_if_signal = np.abs(fft_if_signal)[:len(if_signal)//2]
+        # plt.plot(fft_if_signal_freq, fft_if_signal)
+        # plt.show()
+        peaks, _ = find_peaks(fft_if_signal, height=20)
+        fd = fft_if_signal_freq[peaks]
+        distances = (c * fd * T) / (2 * B)
         distances = np.sort(distances)
+        range_fft = fft_if_signal[peaks]
+        range_bins = fft_if_signal_freq[peaks]
         return distances, range_fft, range_bins
     
     def estimate_AoA(self):
@@ -122,4 +137,18 @@ class task_2_4:
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
+        for target in range(2):
+            phase_diff = np.linspace(0, np.pi, NUM_ANTENNAS)
+            aoa = np.arcsin((np.sin(phase_diff)) / (2 * np.pi * Fs * T))
+            aoas[target] = np.degrees(aoa.mean())
         return aoas
+    
+if __name__ == "__main__":
+    task =  task_2_4()
+    # tx = task.generate_transmitted_signal()
+    # print(tx)
+    # task.compute_if_signal()
+    # dist, _, _ = task.estimate_distance()
+    # print(dist)
+    aoas = task.estimate_AoA()
+    print(aoas)
