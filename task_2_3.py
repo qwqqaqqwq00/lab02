@@ -43,8 +43,8 @@ class task_2_3:
         >>> [round(x, 2) for x in f]
         [50.99, 51.0, 51.02]
         """
-        fs = None  # Define the appropriate sampling rate
-        N = None  # Define the number of samples
+        fs = 104  # Define the appropriate sampling rate
+        N = 180*fs  # Define the number of samples
 
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: Set the appropriate fs and N
@@ -53,16 +53,27 @@ class task_2_3:
         t = np.arange(-N / (2 * fs), N / (2 * fs),  1/fs)
         s_t = self.func1(t) # signal function
         
-        f = np.zeros(3, dtype=np.float64) # frequency list
+        # f = np.zeros(3, dtype=np.float64) # frequency list
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: Compute the FFT and get the frequency list
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
-        fs = float(fs)
-        N = int(N)
-        f = np.asarray(f).astype(np.float64)
-        f = np.sort(f)
+        # fs = float(fs)
+        # N = int(N)
+        # f = np.asarray(f).astype(np.float64)
+        # f = np.sort(f)
+        s_f = fft(s_t)
+        s_f = np.abs(s_f)
+        s_f_freq = fftfreq(len(s_t), 1/fs)
+        n = len(s_f)
+        s_f = s_f[:n//2]
+        s_f_freq = s_f_freq[:n//2]
+        # plt.plot(t, s_t)
+        # plt.plot(s_f_freq, s_f)
+        # plt.show()
+        freq, _ = find_peaks(s_f)
+        f = s_f_freq[freq]
         
         return fs, N, f
     
@@ -87,8 +98,8 @@ class task_2_3:
         >>> [round(x, 2) for x in f]
         [51.2, 1000.6, 2000.0]
         """
-        fs = None  # Define the appropriate sampling rate
-        N = None  # Define the number of samples
+        fs = 5000  # Define the appropriate sampling rate
+        N = 41500  # Define the number of samples
 
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: Set the appropriate fs and N
@@ -103,10 +114,21 @@ class task_2_3:
         # TODO: Compute the FFT and get the frequency list
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
-        fs = float(fs)
-        N = int(N)
-        f = np.asarray(f).astype(np.float64)
-        f = np.sort(f)
+        # fs = float(fs)
+        # N = int(N)
+        # f = np.asarray(f).astype(np.float64)
+        # f = np.sort(f)
+        s_f = fft(s_t)
+        s_f = np.abs(s_f)
+        s_f_freq = fftfreq(len(s_t), 1/fs)
+        n = len(s_f)
+        s_f = s_f[:n//2]
+        s_f_freq = s_f_freq[:n//2]
+        # plt.plot(t, s_t)
+        # plt.plot(s_f_freq, s_f)
+        # plt.show()
+        freq, _ = find_peaks(s_f)
+        f = s_f_freq[freq]
         
         return fs, N, f
         
