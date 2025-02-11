@@ -59,7 +59,8 @@ class task_2_2:
         s_f_freq = s_f_freq[:n//2]
         # plt.plot(s_f_freq, s_f)
         # plt.show()
-        freq, _ = find_peaks(s_f)
+        freq, _ = find_peaks(s_f, prominence=1)
+        # print(freq)
         freq = s_f[freq]
         return freq
     
