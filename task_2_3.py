@@ -44,7 +44,7 @@ class task_2_3:
         [50.99, 51.0, 51.02]
         """
         fs = 104  # Define the appropriate sampling rate
-        N = 180*fs  # Define the number of samples
+        N = 1000*fs  # Define the number of samples
 
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: Set the appropriate fs and N
@@ -72,7 +72,7 @@ class task_2_3:
         # plt.plot(t, s_t)
         # plt.plot(s_f_freq, s_f)
         # plt.show()
-        freq, _ = find_peaks(s_f)
+        freq, _ = find_peaks(s_f, height=10)
         f = s_f_freq[freq]
         
         return fs, N, f
@@ -127,7 +127,7 @@ class task_2_3:
         # plt.plot(t, s_t)
         # plt.plot(s_f_freq, s_f)
         # plt.show()
-        freq, _ = find_peaks(s_f)
+        freq, _ = find_peaks(s_f, height=10)
         f = s_f_freq[freq]
         
         return fs, N, f

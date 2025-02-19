@@ -80,6 +80,7 @@ class task_2_4:
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
+        tx = np.tile(tx, (NUM_ANTENNAS, 1))
         if_signal = tx * self.rx_data.conj()
         return if_signal
     
@@ -98,24 +99,31 @@ class task_2_4:
         True
         """
         if_signal = self.compute_if_signal()
-        distances = None
-        range_fft = None # Range FFT
+        distances = []
+        range_fft = [] # Range FFT
         range_bins = None # Range bins
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
-        if_signal = if_signal.mean(axis=0)
-        fft_if_signal = fft(if_signal)
-        fft_if_signal_freq = fftfreq(len(if_signal), 1/Fs)[:len(if_signal)//2]
-        fft_if_signal = np.abs(fft_if_signal)[:len(if_signal)//2]
-        # plt.plot(fft_if_signal_freq, fft_if_signal)
+        # fig = plt.figure()
+        for channel in if_signal:
+            fft_if_signal = fft(channel)
+            fft_if_signal_freq = fftfreq(len(channel), 1/Fs)[:len(channel)//2]
+            if range_bins is None:
+                range_bins = (c * fft_if_signal_freq * T) / (2 * B)
+            fft_if_signal = np.abs(fft_if_signal)[:len(channel)//2]
+            range_fft.append(fft_if_signal)
+            peaks, _ = find_peaks(fft_if_signal, height=20)
+            fd = range_bins[peaks]
+            # distance = (c * fd * T) / (2 * B)
+            distance = fd
+            distances.extend(distance)
+            # range_fft = fft_if_signal[peaks]
+            # range_bins = fft_if_signal_freq[peaks]
         # plt.show()
-        peaks, _ = find_peaks(fft_if_signal, height=20)
-        fd = fft_if_signal_freq[peaks]
-        distances = (c * fd * T) / (2 * B)
+        distances = np.unique(distances)
         distances = np.sort(distances)
-        range_fft = fft_if_signal[peaks]
-        range_bins = fft_if_signal_freq[peaks]
+        range_fft = np.array(range_fft).mean(axis=0)
         return distances, range_fft, range_bins
     
     def estimate_AoA(self):
@@ -132,14 +140,14 @@ class task_2_4:
         >>> all(isinstance(v, float) for v in aoas.values())
         True
         """
-        _, range_fft, range_bins = self.estimate_distance()
+        fd, range_fft, range_bins = self.estimate_distance()
         aoas = {}
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
-        for target in range(2):
-            phase_diff = np.linspace(0, np.pi, NUM_ANTENNAS)
-            aoa = np.arcsin((np.sin(phase_diff)) / (2 * np.pi * Fs * T))
+        for target in fd:
+            phase_diff = 2 * np.pi * target * T
+            aoa = np.arcsin(phase_diff / (2 * np.pi * Fs * T))
             aoas[target] = np.degrees(aoa.mean())
         return aoas
     
@@ -148,7 +156,9 @@ if __name__ == "__main__":
     # tx = task.generate_transmitted_signal()
     # print(tx)
     # task.compute_if_signal()
-    # dist, _, _ = task.estimate_distance()
+    # dist, rf, rb = task.estimate_distance()
     # print(dist)
+    # print(rf)
+    # print(rb)
     aoas = task.estimate_AoA()
     print(aoas)
